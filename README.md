@@ -57,6 +57,7 @@ bash install_macos.sh
 - [x] 自动将安装目录添加到用户 PATH
 - [x] 可选配置自定义 API 环境变量（直连官方跳过即可）
 - [x] 下载失败时支持指定本地已下载的 claude 文件路径
+- [x] **下载失败时自动降级 npm 镜像安装**（需已安装 Node.js）
 - [x] 可逆卸载，同时清理安装目录和 PATH 条目
 - [x] 安装完成后显示常用命令速查
 
@@ -69,6 +70,30 @@ bash install_macos.sh
 | 硬编码第三方 API 代理 | 用户自主选择是否配置自定义 API 地址 |
 | 修改全局 npm registry | 不使用 npm，不污染全局配置 |
 | 无卸载支持 | 支持可逆卸载 |
+
+## 网络问题解决方案
+
+### 方案 1：官方 Native Install（推荐）
+使用代理访问 `claude.ai` 下载原生 exe，无需 Node.js。
+
+### 方案 2：npm 镜像降级（备选）
+当官方下载失败时，脚本会自动检测 npm 并尝试通过淘宝镜像安装：
+
+1. 确保已安装 [Node.js](https://nodejs.org/)（自带 npm）
+2. 运行安装脚本，失败后自动降级
+3. 脚本会临时配置淘宝镜像源，安装完成后**不保留**修改
+
+```powershell
+# 手动触发 npm 降级（如已安装 Node.js）
+irm https://gh-proxy.com/... | iex
+# 下载失败后会询问是否尝试 npm 安装
+```
+
+### 方案 3：手动下载
+从浏览器访问 [claude.ai/install/windows/claude.exe](https://claude.ai/install/windows/claude.exe)（需代理），下载后放到：
+```
+C:\Users\你的用户名\.local\bin\claude.exe
+```
 
 ## 搭配 CC Switch 使用（推荐）
 

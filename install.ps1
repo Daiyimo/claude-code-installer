@@ -17,6 +17,7 @@ Write-Host ""
 Write-Host "+----------------------------------------------+" -ForegroundColor Cyan
 Write-Host "|     Claude Code 一键安装 (Native Install)    |" -ForegroundColor Cyan
 Write-Host "|     官方方式 - 无需 Node.js / npm            |" -ForegroundColor Cyan
+Write-Host "|     网络失败时自动降级 npm 镜像安装          |" -ForegroundColor Cyan
 Write-Host "+----------------------------------------------+" -ForegroundColor Cyan
 Write-Host ""
 
@@ -146,8 +147,55 @@ if (-not $installedVersion) {
             Write-WARN "安装完成，但验证失败。请重启 PowerShell 后运行 'claude --version' 检查"
         }
     } else {
-        Write-WARN "下载失败。建议：`n        1. 使用代理/VPN 访问 claude.ai`n        2. 或手动从 https://claude.ai/install/windows/claude.exe 下载 claude.exe 到 $ClaudeExe"
-        return
+        Write-WARN "下载失败。建议：`n        1. 使用代理/VPN 访问 claude.ai`n        2. 或手动从 https://claude.ai/install/windows/claude.exe 下载 claude.exe 到 $ClaudeExe`n        3. 或通过 npm 镜像安装（需要 Node.js）"
+        Write-INFO "尝试通过 npm 镜像安装 Claude Code..."
+
+        # 检查 Node.js / npm
+        $npmVer = npm --version 2>$null
+        if (-not $npmVer) {
+            Write-WARN "未检测到 npm，请先安装 Node.js 或使用其他方案"
+            return
+        }
+        Write-OK "检测到 npm $npmVer"
+
+        # 配置淘宝镜像
+        Write-INFO "配置 npm 镜像源为淘宝镜像..."
+        npm config set registry https://registry.npmmirror.com 2>$null | Out-Null
+
+        # 安装 Claude Code
+        Write-INFO "正在通过 npm 安装 Claude Code..."
+        $npmResult = npm install -g @anthropic-ai/claude-code 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-OK "npm 安装成功"
+
+            # npm 安装的路径通常是 %AppData%\npm，需要检查并复制到 .local\bin
+            $npmGlobalPrefix = npm config get prefix 2>$null
+            if ($npmGlobalPrefix) {
+                $npmClaudePath = Join-Path $npmGlobalPrefix "claude.cmd"
+                if (Test-Path $npmClaudePath) {
+                    Write-INFO "检测到 npm 安装的 claude 在 $npmClaudePath"
+                    # 创建符号链接或复制到 .local\bin
+                    try {
+                        New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
+                        Copy-Item $npmClaudePath $ClaudeExe -Force
+                        Write-OK "已同步到 $ClaudeExe"
+                    } catch {
+                        Write-WARN "无法复制到 $ClaudeExe，请直接从 $npmClaudePath 使用"
+                    }
+                }
+            }
+
+            # 验证
+            try {
+                $ver = claude --version 2>$null
+                Write-OK "Claude Code $ver 安装完成"
+            } catch {
+                Write-WARN "安装完成，但验证失败。请重启 PowerShell 后运行 'claude --version' 检查"
+            }
+        } else {
+            Write-WARN "npm 安装失败：$npmResult"
+            return
+        }
     }
 }
 
