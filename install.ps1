@@ -45,6 +45,7 @@ if (Test-Path $ClaudeExe) {
         $installedVersion = & $ClaudeExe --version 2>$null
         if ($installedVersion) {
             Write-OK "Claude Code ($installedVersion) 已安装，跳过"
+            return
         }
     } catch {
         # 文件存在但无法执行，删除后重新安装
@@ -146,6 +147,7 @@ if (-not $installedVersion) {
         }
     } else {
         Write-WARN "下载失败。建议：`n        1. 使用代理/VPN 访问 claude.ai`n        2. 或手动从 https://claude.ai/install/windows/claude.exe 下载 claude.exe 到 $ClaudeExe"
+        return
     }
 }
 
