@@ -1,4 +1,4 @@
-﻿# Claude Code 一键安装脚本 (Windows PowerShell)
+# Claude Code 一键安装脚本 (Windows PowerShell)
 # 官方 Native Install 方式 - 无需 Node.js / npm
 # 一行命令下载即运行:
 #   iex (irm https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1)
