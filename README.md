@@ -6,42 +6,46 @@ Claude Code 官方 Native Install 方式的一键安装脚本，支持 **Windows
 
 ### Windows (PowerShell)
 
+官方直装：
+
 ```powershell
 irm https://claude.ai/install.ps1 | iex
 ```
 
-或使用本仓库脚本（国内加速）：
+本仓库（国内加速）：
 
 ```powershell
-# 下载并运行（通过 GitHub 加速镜像）
-$url = "https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1"
-irm $url | iex
-
-# 或下载后本地运行
-curl -fsSL "https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1" -o install.ps1
-.\install.ps1
+irm https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1 | iex
 ```
 
-要求：**Git for Windows**（脚本会检测并通过 winget 自动安装）
+> 一条命令下载即运行，脚本通过管道执行，不残留任何文件。脚本会自动检测 Git for Windows，缺失时通过 winget 静默安装。
 
 ### Linux (Bash)
 
-```bash
-# 官方一键安装
-curl -fsSL https://claude.ai/install.sh | bash
+官方直装：
 
-# 或使用本仓库脚本（国内加速）
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+本仓库（国内加速）：
+
+```bash
 curl -fsSL "https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.sh" -o install.sh
 bash install.sh
 ```
 
 ### macOS (Bash)
 
-```bash
-# 官方一键安装
-curl -fsSL https://claude.ai/install.sh | bash
+官方直装：
 
-# 或使用本仓库脚本（国内加速）
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+本仓库（国内加速）：
+
+```bash
 curl -fsSL "https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install_macos.sh" -o install_macos.sh
 bash install_macos.sh
 ```
