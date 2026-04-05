@@ -1,17 +1,16 @@
 # Claude Code 一键安装脚本 (Windows PowerShell)
 # 官方 Native Install 方式 - 无需 Node.js / npm
 # 一行命令下载即运行:
-#   irm https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1 | iex
+#   iex (irm https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1)
 
 $ErrorActionPreference = "Stop"
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-$OK     = { param($m) Write-Host "[OK] $m" -ForegroundColor Green }
-$INFO   = { param($m) Write-Host "[*]  $m" -ForegroundColor Cyan }
-$WARN   = { param($m) Write-Host "[!]  $m" -ForegroundColor Yellow }
-$FAIL   = { param($m) Write-Host "[X]  $m" -ForegroundColor Red }
+function Write-OK($msg) { Write-Host "[OK] $msg" -ForegroundColor Green }
+function Write-INFO($msg) { Write-Host "[*]  $msg" -ForegroundColor Cyan }
+function Write-WARN($msg) { Write-Host "[!]  $msg" -ForegroundColor Yellow }
 
 # ======================== 欢迎 ========================
 Write-Host ""
@@ -24,13 +23,13 @@ Write-Host ""
 # ======================== 确保 Git ========================
 $gitVer = git --version 2>$null
 if (-not $gitVer) {
-    & $WARN.Invoke("未检测到 Git for Windows，正在通过 winget 安装...")
+    Write-WARN "未检测到 Git for Windows，正在通过 winget 安装..."
     winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements 2>$null | Out-Null
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     $gitVer = git --version 2>$null
-    if ($gitVer) { & $OK.Invoke("Git 已安装: $gitVer") }
+    if ($gitVer) { Write-OK "Git 已安装: $gitVer" }
 } else {
-    & $OK.Invoke("Git 已安装: $gitVer")
+    Write-OK "Git 已安装: $gitVer"
 }
 
 # ======================== 安装路径 ========================
@@ -42,10 +41,10 @@ New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 # ======================== 检查已安装 ========================
 $installedVersion = & $ClaudeExe --version 2>$null
 if ($installedVersion) {
-    & $OK.Invoke("Claude Code ($installedVersion) 已安装，跳过")
+    Write-OK "Claude Code ($installedVersion) 已安装，跳过"
 } else {
     # ======================== 下载 claude.exe ========================
-    & $INFO.Invoke("正在下载 Claude Code...")
+    Write-INFO "正在下载 Claude Code..."
     $downloadUrl = "https://claude.ai/install/windows/claude.exe"
     $tempFile    = Join-Path $env:TEMP "claude-install.exe"
 
@@ -54,12 +53,12 @@ if ($installedVersion) {
         Invoke-WebRequest -Uri $downloadUrl -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
         $downloaded = $true
     } catch {
-        & $WARN.Invoke("官方下载失败，跳过")
+        Write-WARN "官方下载失败，跳过"
     }
 
     if ($downloaded) {
         Move-Item -Path $tempFile -Destination $ClaudeExe -Force
-        & $OK.Invoke("已安装到 $ClaudeExe")
+        Write-OK "已安装到 $ClaudeExe"
     }
 
     # 添加到 PATH
@@ -72,9 +71,9 @@ if ($installedVersion) {
     # 验证
     try {
         $ver = & $ClaudeExe --version 2>$null
-        & $OK.Invoke("Claude Code $ver 安装完成")
+        Write-OK "Claude Code $ver 安装完成"
     } catch {
-        & $WARN.Invoke("安装完成，验证失败（如提示找不到命令，请将 $InstallDir 添加到 PATH）")
+        Write-WARN "安装完成，验证失败（如提示找不到命令，请将 $InstallDir 添加到 PATH）"
     }
 }
 

@@ -15,7 +15,7 @@ irm https://claude.ai/install.ps1 | iex
 本仓库（国内加速）：
 
 ```powershell
-irm https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1 | iex
+iex (irm https://gh-proxy.com/https://raw.githubusercontent.com/Daiyimo/claude-code-installer/main/install.ps1)
 ```
 
 > 一条命令下载即运行，脚本通过管道执行，不残留任何文件。脚本会自动检测 Git for Windows，缺失时通过 winget 静默安装。
